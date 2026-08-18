@@ -20,10 +20,7 @@ class _HomePageState extends State<HomePage> {
   /// controller for text field
   final _trxTokenController = TextEditingController(
     // text: "Bn4//SoP3kgkNjAxYTRhMDMtZTQxMy00MjY4LWJhM2MtNzk3NDhkMjM3ZTcyUFkGNTk2OTEx"
-    text:
-        !kDebugMode
-            ? null
-            : "9n3DhB6W3UgkZWMwNWQ4YTYtZGI3NC00YTNmLWJhNmYtNDZlNmE1NjA5ZmE0UFkGNTM0ODk3",
+    text: !kDebugMode ? null : "9n3DhB6W3UgkZWMwNWQ4YTYtZGI3NC00YTNmLWJhNmYtNDZlNmE1NjA5ZmE0UFkGNTM0ODk3",
   );
   final _userIdentifierController = TextEditingController(
     // text: !kDebugMode ? null : "777111222"
@@ -40,27 +37,14 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _showSnackBar(
-    String message, {
-    bool isError = false,
-  }) {
+  void _showSnackBar(String message, {bool isError = false}) {
     if (!mounted) {
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: isError ? Colors.red : Colors.green));
   }
 
-  InitBasSdkModel _createInitBasSdkModel({
-    required String trxToken,
-    String? userIdentifier,
-    String? fullName,
-    String language = 'ar',
-  }) {
+  InitBasSdkModel _createInitBasSdkModel({required String trxToken, String? userIdentifier, String? fullName, String language = 'ar'}) {
     return switch (_selectedEnvironment) {
       _BasPayExampleEnvironment.prod => InitBasSdkModel.prod(
         trxToken: trxToken,
@@ -97,6 +81,7 @@ class _HomePageState extends State<HomePage> {
     final InitBasSdkModel initBasSdkModel = _createInitBasSdkModel(
       /// trxToken is required
       trxToken: trxToken,
+
       /// userIdentifier is optional, default value is null
       /// example: userIdentifier: "733733733" phone number
       // userIdentifier: userIdentifier.isEmpty ? null : userIdentifier,
@@ -104,13 +89,11 @@ class _HomePageState extends State<HomePage> {
       // fullName: fullName.isEmpty ? null : fullName,
       /// language is optional, default value is "ar"
       /// you can change it to "en" if you want to use English language instead of Arabic
-      // language: "ar",
+      language: "ar",
     );
 
     try {
-      final result = await _basPayFlutterPlugin.callBasPay(
-        model: initBasSdkModel,
-      );
+      final result = await _basPayFlutterPlugin.callBasPay(model: initBasSdkModel);
       if (!mounted) {
         return;
       }
@@ -131,16 +114,10 @@ class _HomePageState extends State<HomePage> {
           result: ${resultModel?.result}
           code: ${resultModel?.code}
           """);
-          _showSnackBar(
-            resultModel?.message ?? 'Payment failed',
-            isError: true,
-          );
+          _showSnackBar(resultModel?.message ?? 'Payment failed', isError: true);
         }
       } else {
-        _showSnackBar(
-          'Error calling bas pay flutter plugin',
-          isError: true,
-        );
+        _showSnackBar('Error calling bas pay flutter plugin', isError: true);
       }
     } catch (error) {
       logger.e('callBasPay error: $error');
@@ -156,20 +133,11 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _trxTokenController,
-              decoration: const InputDecoration(hintText: 'trxToken'),
-            ),
+            TextField(controller: _trxTokenController, decoration: const InputDecoration(hintText: 'trxToken')),
             const SizedBox(height: 16),
-            TextField(
-              controller: _userIdentifierController,
-              decoration: const InputDecoration(hintText: 'userIdentifier'),
-            ),
+            TextField(controller: _userIdentifierController, decoration: const InputDecoration(hintText: 'userIdentifier')),
             const SizedBox(height: 16),
-            TextField(
-              controller: _fullNameController,
-              decoration: const InputDecoration(hintText: 'fullName'),
-            ),
+            TextField(controller: _fullNameController, decoration: const InputDecoration(hintText: 'fullName')),
             const SizedBox(height: 16),
             _EnvironmentDropdown(
               selectedEnvironment: _selectedEnvironment,
@@ -180,10 +148,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: callBasPay,
-              child: const Text('Call Bas Pay'),
-            ),
+            ElevatedButton(onPressed: callBasPay, child: const Text('Call Bas Pay')),
           ],
         ),
       ),
@@ -191,17 +156,10 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-enum _BasPayExampleEnvironment {
-  prod,
-  dev,
-  sandbox,
-}
+enum _BasPayExampleEnvironment { prod, dev, sandbox }
 
 class _EnvironmentDropdown extends StatelessWidget {
-  const _EnvironmentDropdown({
-    required this.selectedEnvironment,
-    required this.onChanged,
-  });
+  const _EnvironmentDropdown({required this.selectedEnvironment, required this.onChanged});
 
   final _BasPayExampleEnvironment selectedEnvironment;
   final ValueChanged<_BasPayExampleEnvironment> onChanged;
@@ -211,15 +169,13 @@ class _EnvironmentDropdown extends StatelessWidget {
     return DropdownButtonFormField<_BasPayExampleEnvironment>(
       value: selectedEnvironment,
       decoration: const InputDecoration(hintText: 'environment'),
-      items: _BasPayExampleEnvironment.values
-          .map(
-            (_BasPayExampleEnvironment environment) =>
-                DropdownMenuItem<_BasPayExampleEnvironment>(
-              value: environment,
-              child: Text(environment.name),
-            ),
-          )
-          .toList(),
+      items:
+          _BasPayExampleEnvironment.values
+              .map(
+                (_BasPayExampleEnvironment environment) =>
+                    DropdownMenuItem<_BasPayExampleEnvironment>(value: environment, child: Text(environment.name)),
+              )
+              .toList(),
       onChanged: (_BasPayExampleEnvironment? environment) {
         if (environment == null) {
           return;
